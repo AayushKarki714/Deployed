@@ -34,6 +34,7 @@ app.use(
   cookieSession({
     name: "cookie",
     keys: ["nice@123"],
+    path: "http://localhost:3000/",
   })
 );
 
