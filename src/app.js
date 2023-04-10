@@ -6,6 +6,8 @@ const { Strategy } = require("passport-google-oauth20");
 const cookieSession = require("cookie-session");
 const app = express();
 
+app.set("trust-proxy", 1);
+
 let CLIENT_URL = "http://localhost:3000";
 passport.use(
   new Strategy(
