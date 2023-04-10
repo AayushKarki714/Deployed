@@ -8,7 +8,7 @@ const app = express();
 
 app.set("trust-proxy", 1);
 
-let CLIENT_URL = "http://localhost:3000";
+let CLIENT_URL = "";
 passport.use(
   new Strategy(
     {
@@ -26,7 +26,7 @@ passport.use(
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    // origin: "http://localhost:3000",
     credentials: true,
   })
 );
@@ -34,7 +34,7 @@ app.use(
   cookieSession({
     name: "cookie",
     keys: ["nice@123"],
-    path: "http://localhost:3000/",
+    // path: "http://localhost:3000/",
   })
 );
 
@@ -43,9 +43,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/login", (req, res) => {
-  return res.sendFile(path.join(__dirname, "..", "views", "login.html"));
-});
+// app.get("/login", (req, res) => {
+//   return res.sendFile(path.join(__dirname, "..", "views", "login.html"));
+// });
 
 // This gets called
 app.get("/auth/google", passport.authenticate("google", { scope: ["email"] }));
@@ -60,8 +60,8 @@ app.get("/auth/google", passport.authenticate("google", { scope: ["email"] }));
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    successRedirect: `${CLIENT_URL}/dashboard`,
-    failureRedirect: `${CLIENT_URL}/login`,
+    successRedirect: `/dashboard`,
+    failureRedirect: `/login`,
   })
 );
 
@@ -78,6 +78,8 @@ passport.deserializeUser((userId, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(express.static(path.join(__dirname, "..", "public")));
+
 app.get(
   "/secret",
   function (req, res, next) {
@@ -91,5 +93,10 @@ app.get(
       .json({ message: `The Secret Message is ${JSON.stringify(req.user)}` });
   }
 );
+
+app.get("/*", (req, res) => {
+  console.log("[*/] invoked");
+  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+});
 
 module.exports = app;
