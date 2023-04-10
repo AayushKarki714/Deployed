@@ -1,10 +1,12 @@
 const path = require("path");
+const cors = require("cors");
 const express = require("express");
 const passport = require("passport");
 const { Strategy } = require("passport-google-oauth20");
 const cookieSession = require("cookie-session");
 const app = express();
 
+let CLIENT_URL = "http://localhost:3000";
 passport.use(
   new Strategy(
     {
@@ -20,6 +22,12 @@ passport.use(
   )
 );
 
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 app.use(
   cookieSession({
     name: "cookie",
@@ -49,8 +57,8 @@ app.get("/auth/google", passport.authenticate("google", { scope: ["email"] }));
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    successRedirect: "/secret",
-    failureRedirect: "/failure",
+    successRedirect: `${CLIENT_URL}/dashboard`,
+    failureRedirect: `${CLIENT_URL}/login`,
   })
 );
 
